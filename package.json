@@ -1,6 +1,6 @@
 {
   "name": "shadowsocks-update",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A tool for update server data from Shadowsocks Providers to Shadowsocks windows client.",
   "main": "index.js",
   "bin": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/Fndroid/shadowsocks-update.git"
   },
   "keywords": [
     "shadowsocks"
