@@ -1,0 +1,26 @@
+{
+  "name": "shadowsocks-update",
+  "version": "1.0.0",
+  "description": "A tool for update server data from Shadowsocks Providers to Shadowsocks windows client.",
+  "main": "index.js",
+  "bin": {
+    "ssu": "./bin/shadowsocks-update"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js"
+  },
+  "author": "Fndroid",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "shadowsocks"
+  ]
+}
