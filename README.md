@@ -17,10 +17,15 @@ npm install -g shadowsocks-update
         "providers": [
             "https://xxx.xxx.com",
             "https://yyy.yyy.com"
+        ],
+        "filter": [
+            "HK",
+            "TW"
         ]
     }
     ```
     > 网址为Surge托管地址
+    > filter为保留关键字
 3. 运行命令
     ```
     ssu

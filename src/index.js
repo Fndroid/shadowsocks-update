@@ -72,6 +72,13 @@ if (projectConf && ssConf) {
             return surgeFromConf(conf).map(url => surge2ss(url)).filter(i => i !== null)
         })
         let final = ssURLs.reduce((res, pre) => res.concat(pre))
+        if ('filter' in projectConf) {
+            let keys = projectConf.filter
+            console.log(`检测到关键字过滤，开始进行筛选，保留关键字：${keys.join('，')}`)
+            final = final.filter(s => {
+                return keys.find(k => new RegExp(k).test(s.remarks)) !== undefined
+            })
+        }
         ssConf.configs = final
         fs.writeFileSync(cwd + '/gui-config.json', JSON.stringify(ssConf))
         console.log(`Shadowsocks服务器更新完毕，合计更新${final.length}个节点！`)

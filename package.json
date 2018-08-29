@@ -1,7 +1,7 @@
 {
   "name": "shadowsocks-update",
-  "version": "1.0.2",
-  "description": "A tool for update server data from Shadowsocks Providers to Shadowsocks windows client.",
+  "version": "1.1.0",
+  "description": "一个用于通过Surge托管更新Shadowsocks（Windows）节点的工具",
   "main": "index.js",
   "bin": {
     "ssu": "./bin/shadowsocks-update"
