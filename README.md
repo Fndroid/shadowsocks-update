@@ -25,6 +25,7 @@ npm install -g shadowsocks-update
     }
     ```
     > 网址为Surge托管地址
+    
     > filter为保留关键字
 3. 运行命令
     ```
