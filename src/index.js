@@ -1,5 +1,6 @@
 const fs = require('fs')
 const rpm = require('request-promise-native')
+const stable = require('stable')
 
 const cwd = process.cwd()
 
@@ -40,24 +41,25 @@ function surgeFromConf(confFile) {
 
 function surge2ss(surgeURL) {
     let regex = /(.*?)\s*=\s*custom,(.*?),(.*?),(.*?),(.*?),/
-    let obfsRegex = /obfs-host=(.*?)(?:,|$)/
+    let obfsRegex = /obfs-host\s*=\s*(.*?)(?:,|$)/
+    let obfsTypeRegex = /obfs\s*=\s*(.*?)(?:,|$)/
     let res = {}
     if (regex.test(surgeURL)) {
-        res.server = RegExp.$2
-        res.server_port = RegExp.$3
-        res.password = RegExp.$5
-        res.method = RegExp.$4
-        res.remarks = RegExp.$1
+        res.server = RegExp.$2.trim()
+        res.server_port = RegExp.$3.trim()
+        res.password = RegExp.$5.trim()
+        res.method = RegExp.$4.trim()
+        res.remarks = RegExp.$1.trim()
         res.timeout = 5
     } else {
         return null
     }
-    if (obfsRegex.test(surgeURL)) {
+    if (obfsTypeRegex.test(surgeURL)) {
         res.plugin = "obfs-local"
-        res.plugin_opts = `obfs=http;obfs-host=${RegExp.$1}`
-    } else {
-        res.plugin = ""
-        res.plugin_opts = ""
+        res.plugin_opts = `obfs=${RegExp.$1.trim()}`
+        if (obfsRegex.test(surgeURL)) {
+            res.plugin_opts += `;obfs-host=${RegExp.$1.trim()}`
+        }
     }
     return res
 }
@@ -69,8 +71,12 @@ if (projectConf && ssConf) {
     Promise.all(projectConf.providers.map(url => downloadConf(url))).then(confs => {
         console.log('拉取Surge托管成功，正在解析...')
         let ssURLs = confs.map(conf => {
-            return surgeFromConf(conf).map(url => surge2ss(url)).filter(i => i !== null)
-        })
+            let surge = surgeFromConf(conf)
+            if (surge) {
+                return surge.map(url => surge2ss(url)).filter(i => i !== null)
+            }
+            return null
+        }).filter(i => i !== null)
         let final = ssURLs.reduce((res, pre) => res.concat(pre))
         if ('filter' in projectConf) {
             let keys = projectConf.filter
@@ -78,10 +84,16 @@ if (projectConf && ssConf) {
             final = final.filter(s => {
                 return keys.find(k => new RegExp(k).test(s.remarks)) !== undefined
             })
+            let compareFunc = (a, b) => {
+                return (keys.findIndex(k => new RegExp(k).test(a.remarks)) - keys.findIndex(k => new RegExp(k).test(b.remarks)))
+            }
+            final = stable(final, compareFunc)
         }
         ssConf.configs = final
         fs.writeFileSync(cwd + '/gui-config.json', JSON.stringify(ssConf))
         console.log(`Shadowsocks服务器更新完毕，合计更新${final.length}个节点！`)
         console.log('请重启Shadowsocks客户端或进入节点列表点击确定。')
+    }).catch(e => {
+        console.error('配置存在错误或托管无法访问！')
     })
 }
